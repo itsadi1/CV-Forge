@@ -4,8 +4,8 @@ from markdown import markdown
 import os
 import base64
 import requests
+import random
 
-# ----------------- LLM Setup ----------------- #
 rules = """You are an instruction-following assistant. Only do exactly what the user explicitly requests..."""
 
 def llm(prompt):
@@ -19,8 +19,7 @@ def llm(prompt):
     return res.choices[0].message.content
 
 
-# ----------------- GitHub Upload ----------------- #
-def upload_to_github(file_path, repo, branch, token, commit_message, folder="resumes"):
+def publish(file_path, repo, branch, token, commit_message, folder="resumes"):
     # Save the file into the specific folder
     file_name = f"{folder}/{os.path.basename(file_path)}"
     
@@ -49,7 +48,7 @@ def upload_to_github(file_path, repo, branch, token, commit_message, folder="res
     return response.json()
 
 
-# ----------------- HTML Templates ----------------- #
+
 pdf = '''<button id="printBtn">Download PDF</button>
 <script>
 document.getElementById('printBtn').addEventListener('click', function () {
@@ -64,7 +63,6 @@ tile = lambda txt: f'<h2>{txt}</h2>'
 tail = lambda: '</body></html>'
 
 
-# ----------------- CV Builder Class ----------------- #
 class cvmaster:
     def __init__(self):
         self.rules = rules
@@ -115,8 +113,6 @@ class cvmaster:
             file.write(pdf)
             file.write(tail())
 
-
-# ----------------- Streamlit App ----------------- #
 st.set_page_config(page_title="Agentic CV Generator", layout="centered")
 st.title("Agentic CV Generator")
 
@@ -131,7 +127,7 @@ if "experience" not in st.session_state:
     st.session_state.experience = {}
 
 with st.form("cv_form"):
-    username = st.text_input("UserName", key="username")
+    username = str(random.randint(1000,9999))
     name = st.text_input("Full Name", key="fullname")
     contact_number = st.text_input("Contact Number", key="contact")
     email = st.text_input("Email Address", key="email")
@@ -203,7 +199,7 @@ if submitted:
     branch = st.secrets.get("GITHUB_BRANCH", "main")
     token = st.secrets["GITHUB_TOKEN"]
 
-    response = upload_to_github(
+    response = publish(
         file_path=file_path,
         repo=repo,
         branch=branch,
