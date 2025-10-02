@@ -209,7 +209,8 @@ if submitted:
     )
 
     if "content" in response:
-        st.success(f"Resume for {name} saved as {file_path} and uploaded to GitHub ✅")
-        st.markdown(f"[View on GitHub]({response['content']['html_url']})")
+        st.success(f"Resume for {name} published.✅")
+        st.markdown("[Click Here!](https://itsadi1.github.io/CV-Forge/resumes/{file_path})")
+        # st.markdown(f"[View on GitHub]({response['content']['html_url']})")
     else:
         st.error(f"Failed to upload to GitHub: {response}")
