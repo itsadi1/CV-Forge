@@ -97,28 +97,33 @@ class cvmaster:
             file.write(markdown('___'))
             file.write(markdown('## SUMMARY'))
             file.write(markdown(summary))
-            file.write(markdown('___'))
-            file.write(markdown('## EDUCATION'))
-            for i in education:
-                file.write(markdown("##### " + i + " | " + f'Course Results: **{education[i]}**'))
-            file.write(markdown('___'))
-            file.write(markdown('## SKILLS'))
-            file.write(markdown(skills.replace('\n', ' | ')))
-            file.write(markdown('___'))
-            file.write(markdown('## Achievements'))
-            for i in achievements:
-                file.write(markdown('### ' + i))
-                file.write(markdown(achievements[i]))
-            file.write(markdown('___'))
-            file.write(markdown('## PROJECTS'))
-            for i in projects:
-                file.write(markdown('### ' + i))
-                file.write(markdown(projects[i]))
-            file.write(markdown('___'))
-            file.write(markdown('## Experience'))
-            for i in experience:
-                file.write(markdown('### ' + i))
-                file.write(markdown(experience[i]))
+            if education:
+                file.write(markdown('___'))
+                file.write(markdown('## EDUCATION'))
+                for i in education:
+                    file.write(markdown("##### " + i + " | " + f'Course Results: **{education[i]}**'))
+            if skills:
+                file.write(markdown('___'))
+                file.write(markdown('## SKILLS'))
+                file.write(markdown(skills.replace('\n', ' | ')))
+            if achievements:
+                file.write(markdown('___'))
+                file.write(markdown('## Achievements'))
+                for i in achievements:
+                    file.write(markdown('### ' + i))
+                    file.write(markdown(achievements[i]))
+            if projects:
+                file.write(markdown('___'))
+                file.write(markdown('## PROJECTS'))
+                for i in projects:
+                    file.write(markdown('### ' + i))
+                    file.write(markdown(projects[i]))
+            if experience:
+                file.write(markdown('___'))
+                file.write(markdown('## Experience'))
+                for i in experience:
+                    file.write(markdown('### ' + i))
+                    file.write(markdown(experience[i]))
             file.write(pdf)
             file.write(tail())
 
