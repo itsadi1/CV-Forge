@@ -12,9 +12,8 @@ import re
 import os, zipfile, requests
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics.pairwise import cosine_similarity
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
+
 
 rules="""You are an instruction-following assistant. Only do exactly what the user explicitly requests. Do not perform any additional actions, do not ask clarifying questions, and do not provide extra explanation, context, examples, or commentary. If the user’s request is ambiguous or missing required data, choose reasonable defaults only when explicitly permitted; otherwise respond with the single word: 'INSUFFICIENT_INFORMATION'. Always output only the content requested, with no surrounding text. Follow these output rules:
 
@@ -240,18 +239,15 @@ def builder():
         else:
             st.error(f"Failed to upload to GitHub: {response}")
 
-stop_words = set(stopwords.words('english'))
-lemmatizer = WordNetLemmatizer()
-
 def preprocess_text(text):
-    """Cleans, tokenizes, removes stop words, and lemmatizes text."""
     if not text or not isinstance(text, str):
         return ""
+    
     text = text.lower()
-    text = re.sub(r'[^a-z\s]', '', text)  # Remove non-alphabetic characters
-    tokens = word_tokenize(text)
-    tokens = [lemmatizer.lemmatize(token) for token in tokens if token not in stop_words]
-    return ' '.join(tokens) if tokens else ""
+    text = re.sub(r'[^a-z\s]', '', text)  # Remove punctuation/numbers
+    tokens = text.split()
+    tokens = [t for t in tokens if t not in ENGLISH_STOP_WORDS and len(t) > 2]
+    return ' '.join(tokens)
 
 def compute_ats_score(new_resume_text, model, vectorizer, le, mcvs, keyword_weights, max_scores, alpha=0.6, beta=0.4):
     """
@@ -372,17 +368,7 @@ def load(save_dir):
     except:
         return False
 
-def nltktools():
-    if not os.path.exists("nltk_data/tokenizers/punkt"):
-        url = "https://github.com/itsadi1/CV-Forge/blob/main/punkt.zip"
-        r = requests.get(url)
-        open("punkt.zip", "wb").write(r.content)
-        with zipfile.ZipFile("punkt.zip", "r") as zip_ref:
-            zip_ref.extractall("nltk_data/tokenizers")
-        nltk.data.path.append("nltk_data")
-
 if __name__ == '__main__':
-    nltktools()
     repo = 'ats_models_artifacts'
     xgb,vectorizer,le,mcvs,keyword_weights,max_scores = load(repo).values() if load(repo) else st.toast ('Joblib Failure')
     with st.sidebar:
