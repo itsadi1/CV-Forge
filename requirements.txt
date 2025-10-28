@@ -6,3 +6,4 @@ pypdf2
 numpy
 scikit-learn
 xgboost
+nltk
