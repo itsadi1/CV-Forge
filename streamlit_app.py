@@ -371,8 +371,17 @@ def load(save_dir):
     except:
         return False
 
+def nltktools():
+    if not os.path.exists("nltk_data/tokenizers/punkt"):
+        url = "https://github.com/itsadi1/CV-Forge/blob/main/punkt.zip"
+        r = requests.get(url)
+        open("punkt.zip", "wb").write(r.content)
+        with zipfile.ZipFile("punkt.zip", "r") as zip_ref:
+            zip_ref.extractall("nltk_data/tokenizers")
+        nltk.data.path.append("nltk_data")
 
 if __name__ == '__main__':
+    nltktools()
     repo = 'ats_models_artifacts'
     xgb,vectorizer,le,mcvs,keyword_weights,max_scores = load(repo).values() if load(repo) else st.toast ('Joblib Failure')
     with st.sidebar:
