@@ -357,11 +357,13 @@ def analyser():
             hide_index=True,)
 
 @st.cache_resource
-def load(save_dir):
+def nltktools():
     nltk.download('stopwords')
     nltk.download('punkt')
     nltk.download('punkt_tab')
     nltk.download('wordnet')
+
+def load(save_dir):
     try:
         artifacts = {
         'model': joblib.load(os.path.join(save_dir, 'xgb_model.joblib')),
@@ -377,6 +379,7 @@ def load(save_dir):
 
 
 if __name__ == '__main__':
+    nltktools()
     repo = 'ats_models_artifacts'
     xgb,vectorizer,le,mcvs,keyword_weights,max_scores = load(repo).values() if load(repo) else st.toast ('Joblib Failure')
     with st.sidebar:
