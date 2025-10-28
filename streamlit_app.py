@@ -356,12 +356,28 @@ def analyser():
             use_container_width=True,
             hide_index=True,)
 
+NLTK_DATA_PATH = os.path.join(".", "nltk_data") 
+nltk.data.path.append(NLTK_DATA_PATH)
+
 @st.cache_resource
 def nltktools():
-    nltk.download('stopwords')
-    nltk.download('punkt')
-    nltk.download('punkt_tab')
-    nltk.download('wordnet')
+    try:
+        _create_unverified_https_context = ssl._create_unverified_context
+    except AttributeError:
+        pass
+    else:
+        ssl._create_default_https_context = _create_unverified_https_context
+
+    try:
+        nltk.download('stopwords', download_dir=NLTK_DATA_PATH)
+        nltk.download('punkt', download_dir=NLTK_DATA_PATH)
+        nltk.download('punkt_tab', download_dir=NLTK_DATA_PATH)
+        nltk.download('wordnet', download_dir=NLTK_DATA_PATH)
+        st.success("NLTK 'stopwords' resource downloaded successfully.")
+        return True
+    except Exception as e:
+        st.error(f"Failed to download NLTK resources: {e}")
+        return False
 
 def load(save_dir):
     try:
