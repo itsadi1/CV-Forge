@@ -369,10 +369,6 @@ def nltktools():
         ssl._create_default_https_context = _create_unverified_https_context
 
     try:
-        nltk.download('stopwords', download_dir=NLTK_DATA_PATH)
-        nltk.download('punkt', download_dir=NLTK_DATA_PATH)
-        nltk.download('punkt_tab', download_dir=NLTK_DATA_PATH)
-        nltk.download('wordnet', download_dir=NLTK_DATA_PATH)
         st.success("NLTK 'stopwords' resource downloaded successfully.")
         return True
     except Exception as e:
@@ -395,8 +391,10 @@ def load(save_dir):
 
 
 if __name__ == '__main__':
-    nltktools()
-    repo = 'ats_models_artifacts'
+    nltk.download('stopwords', download_dir=NLTK_DATA_PATH)
+    nltk.download('punkt', download_dir=NLTK_DATA_PATH)
+    nltk.download('punkt_tab', download_dir=NLTK_DATA_PATH)
+    nltk.download('wordnet', download_dir=NLTK_DATA_PATH)    repo = 'ats_models_artifacts'
     xgb,vectorizer,le,mcvs,keyword_weights,max_scores = load(repo).values() if load(repo) else st.toast ('Joblib Failure')
     with st.sidebar:
         st.markdown("<h1 style='color: #FF4B4B; font-size: 28px;'><span style='font-size: 36px;'></span> CV Forge</h1>",unsafe_allow_html=True)
