@@ -384,7 +384,30 @@ if __name__ == '__main__':
         st.write('Feedback:')
         stars=st.feedback("stars")
         st.write("Made by: Aditya Bajaj")
-
+        st.markdown(
+    """
+    <div style="display: flex; justify-content: left; gap: 15px; margin-top: 20px;">
+        <a href="https://github.com/itsadi1" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" 
+                 width="32" height="32" style="border-radius:50%;">
+        </a>
+        <a href="https://bento.me/itsadi1" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/7198/7198202.png" 
+             width="32" height="32" style="border-radius:5px;" alt="Portfolio">
+        </a>
+        <a href="https://www.linkedin.com/in/itsadi1" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" 
+                 width="32" height="32" style="border-radius:5px;">
+        </a>
+        <a href="mailto:itsadi1@outlook.com" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/732/732223.png" 
+                 width="32" height="32" style="border-radius:5px;">
+        </a>
+        
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 
     match page:
