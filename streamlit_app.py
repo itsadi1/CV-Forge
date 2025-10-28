@@ -9,6 +9,7 @@ import PyPDF2
 import joblib
 import  xgboost
 import re
+import os, zipfile, requests
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.corpus import stopwords
