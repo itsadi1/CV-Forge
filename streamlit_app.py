@@ -357,39 +357,6 @@ def analyser():
             hide_index=True,)
 
 
-NLTK_DATA_PATH = os.path.join(".", "nltk_data")
-if NLTK_DATA_PATH not in nltk.data.path:
-    nltk.data.path.append(NLTK_DATA_PATH)
-
-@st.cache_resource
-def nltktools():
-    st.info("Checking for NLTK resources...")
-    
-    # SSL Fix
-    try:
-        _create_unverified_https_context = ssl._create_unverified_context
-    except AttributeError:
-        pass
-    else:
-        ssl._create_default_https_context = _create_unverified_https_context
-    
-    # Check if 'stopwords' are already available to avoid unnecessary download
-    try:
-        stopwords.words('english')
-        st.success("NLTK 'stopwords' are already available.")
-        return True
-    except LookupError:
-        # Resource is missing, proceed with download
-        st.warning("NLTK 'stopwords' not found. Downloading...")
-        try:
-            # Force the download to the defined directory
-            nltk.download('stopwords', download_dir=NLTK_DATA_PATH, force=True)
-            st.success("NLTK 'stopwords' downloaded successfully.")
-            return True
-        except Exception as e:
-            st.error(f"Failed to download NLTK resources: {e}")
-            return False
-
 def load(save_dir):
     try:
         artifacts = {
@@ -406,7 +373,6 @@ def load(save_dir):
 
 
 if __name__ == '__main__':
-    nltktools()
     repo = 'ats_models_artifacts'
     xgb,vectorizer,le,mcvs,keyword_weights,max_scores = load(repo).values() if load(repo) else st.toast ('Joblib Failure')
     with st.sidebar:
