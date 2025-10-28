@@ -1,2 +1,8 @@
 mistralai
 markdown
+streamlit
+joblib
+pypdf2
+numpy
+scikit-learn
+xgboost
