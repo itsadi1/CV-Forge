@@ -356,9 +356,6 @@ def analyser():
             use_container_width=True,
             hide_index=True,)
 
-NLTK_DATA_PATH = os.path.join(".", "nltk_data") 
-nltk.data.path.append(NLTK_DATA_PATH)
-
 @st.cache_resource
 def nltktools():
     try:
@@ -369,6 +366,10 @@ def nltktools():
         ssl._create_default_https_context = _create_unverified_https_context
 
     try:
+        nltk.download('stopwords')
+        nltk.download('punkt')
+        nltk.download('punkt_tab')
+        nltk.download('wordnet')
         st.success("NLTK 'stopwords' resource downloaded successfully.")
         return True
     except Exception as e:
@@ -391,10 +392,7 @@ def load(save_dir):
 
 
 if __name__ == '__main__':
-    nltk.download('stopwords', download_dir=NLTK_DATA_PATH)
-    nltk.download('punkt', download_dir=NLTK_DATA_PATH)
-    nltk.download('punkt_tab', download_dir=NLTK_DATA_PATH)
-    nltk.download('wordnet', download_dir=NLTK_DATA_PATH)
+    nltktools()
     repo = 'ats_models_artifacts'
     xgb,vectorizer,le,mcvs,keyword_weights,max_scores = load(repo).values() if load(repo) else st.toast ('Joblib Failure')
     with st.sidebar:
