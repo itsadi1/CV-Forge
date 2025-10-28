@@ -391,10 +391,10 @@ def load(save_dir):
 
 
 if __name__ == '__main__':
-    nltk.download('stopwords')
-    nltk.download('punkt')
-    nltk.download('punkt_tab')
-    nltk.download('wordnet')    
+    nltk.download('stopwords', download_dir=NLTK_DATA_PATH)
+    nltk.download('punkt', download_dir=NLTK_DATA_PATH)
+    nltk.download('punkt_tab', download_dir=NLTK_DATA_PATH)
+    nltk.download('wordnet', download_dir=NLTK_DATA_PATH)
     repo = 'ats_models_artifacts'
     xgb,vectorizer,le,mcvs,keyword_weights,max_scores = load(repo).values() if load(repo) else st.toast ('Joblib Failure')
     with st.sidebar:
