@@ -9,7 +9,7 @@ import PyPDF2
 import joblib
 import  xgboost
 import re
-import os, zipfile, requests
+import os, zipfile, requests, json
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
@@ -367,11 +367,26 @@ def load(save_dir):
         return False
 
 def feedbackpipe(stars):
-    BOT_TOKEN = os.environ.get("BOT_TOKEN")
-    CHAT_ID = os.environ.get("CHAT_ID")
-    send_text = f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage?chat_id={CHAT_ID}&parse_mode=Markdown&text={'🌟'*stars}'
-    response = requests.get(send_text)
-    return response.json()
+    WEBHOOK_URL = os.environ.get('WEBHOOK_URL')
+    payload = {
+        "text": ':star: '*stars
+    }
+
+    headers = {
+        "Content-type": "application/json"
+    }
+
+    try:
+        response = requests.post(WEBHOOK_URL, data=json.dumps(payload), headers=headers)
+
+        if response.status_code == 200:
+            print("Message successfully sent to Slack.")
+        else:
+            print(f"Error sending message. Status Code: {response.status_code}")
+            print(f"Response: {response.text}")
+
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred: {e}")
 
 def feedback():
     match st.session_state.feedback:
