@@ -9,11 +9,11 @@ import PyPDF2
 import joblib
 import  xgboost
 import re
-import os, zipfile, requests
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
-
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
 
 rules="""You are an instruction-following assistant. Only do exactly what the user explicitly requests. Do not perform any additional actions, do not ask clarifying questions, and do not provide extra explanation, context, examples, or commentary. If the user’s request is ambiguous or missing required data, choose reasonable defaults only when explicitly permitted; otherwise respond with the single word: 'INSUFFICIENT_INFORMATION'. Always output only the content requested, with no surrounding text. Follow these output rules:
 
@@ -239,15 +239,18 @@ def builder():
         else:
             st.error(f"Failed to upload to GitHub: {response}")
 
+stop_words = set(stopwords.words('english'))
+lemmatizer = WordNetLemmatizer()
+
 def preprocess_text(text):
+    """Cleans, tokenizes, removes stop words, and lemmatizes text."""
     if not text or not isinstance(text, str):
         return ""
-    
     text = text.lower()
-    text = re.sub(r'[^a-z\s]', '', text)  # Remove punctuation/numbers
-    tokens = text.split()
-    tokens = [t for t in tokens if t not in ENGLISH_STOP_WORDS and len(t) > 2]
-    return ' '.join(tokens)
+    text = re.sub(r'[^a-z\s]', '', text)  # Remove non-alphabetic characters
+    tokens = word_tokenize(text)
+    tokens = [lemmatizer.lemmatize(token) for token in tokens if token not in stop_words]
+    return ' '.join(tokens) if tokens else ""
 
 def compute_ats_score(new_resume_text, model, vectorizer, le, mcvs, keyword_weights, max_scores, alpha=0.6, beta=0.4):
     """
@@ -353,7 +356,6 @@ def analyser():
             use_container_width=True,
             hide_index=True,)
 
-
 def load(save_dir):
     try:
         artifacts = {
@@ -368,7 +370,28 @@ def load(save_dir):
     except:
         return False
 
+def feedbackpipe(stars):
+    BOT_TOKEN = os.environ.get("BOT_TOKEN")
+    CHAT_ID = os.environ.get("CHAT_ID")
+    send_text = f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage?chat_id={CHAT_ID}&parse_mode=Markdown&text={'🌟'*stars}'
+    response = requests.get(send_text)
+    return response.json()
+
+def feedback():
+    match st.session_state.feedback:
+        case False:
+            if stars==None:
+                st.toast("Please share your feedback.")
+            else:
+                st.session_state.feedback=True
+                feedbackpipe(stars)
+                st.toast("Thank you for your feedback.")
+        case True:
+            st.toast("You've already submitted your feedback.")
+    
+
 if __name__ == '__main__':
+    if 'feedback' not in st.session_state: st.session_state.feedback = False
     repo = 'ats_models_artifacts'
     xgb,vectorizer,le,mcvs,keyword_weights,max_scores = load(repo).values() if load(repo) else st.toast ('Joblib Failure')
     with st.sidebar:
@@ -382,32 +405,11 @@ if __name__ == '__main__':
         )
         st.markdown('---')
         st.write('Feedback:')
-        stars=st.feedback("stars")
+        stars=st.feedback("stars",disabled=st.session_state.feedback)
+        st.button('Submit Feedback',on_click=feedback)
+        if stars!=None:
+            stars+=1
         st.write("Made by: Aditya Bajaj")
-        st.markdown(
-    """
-    <div style="display: flex; justify-content: left; gap: 15px; margin-top: 20px;">
-        <a href="https://github.com/itsadi1" target="_blank">
-            <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" 
-                 width="32" height="32" style="border-radius:50%;">
-        </a>
-        <a href="https://bento.me/itsadi1" target="_blank">
-            <img src="https://cdn-icons-png.flaticon.com/512/7198/7198202.png" 
-             width="32" height="32" style="border-radius:5px;" alt="Portfolio">
-        </a>
-        <a href="https://www.linkedin.com/in/itsadi1" target="_blank">
-            <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" 
-                 width="32" height="32" style="border-radius:5px;">
-        </a>
-        <a href="mailto:itsadi1@outlook.com" target="_blank">
-            <img src="https://cdn-icons-png.flaticon.com/512/732/732223.png" 
-                 width="32" height="32" style="border-radius:5px;">
-        </a>
-        
-    </div>
-    """,
-    unsafe_allow_html=True
-)
 
 
     match page:
